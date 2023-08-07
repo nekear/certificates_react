@@ -1,5 +1,6 @@
 import { BaseQueryFn } from "@reduxjs/toolkit/dist/query/react"
 import axios, { AxiosError, AxiosRequestConfig } from "axios"
+import { ServerError } from "@app/types"
 
 const API_URL = import.meta.env.VITE_API_URL
 export const axiosBaseQuery =
@@ -12,7 +13,7 @@ export const axiosBaseQuery =
       isSecure?: boolean
     },
     { payload: any },
-    unknown,
+    { status: number; data: ServerError | undefined },
     unknown
   > =>
   async ({ url, method = "GET", body, params, isSecure = true }) => {
@@ -28,10 +29,9 @@ export const axiosBaseQuery =
     } catch (axiosError) {
       const err = axiosError as AxiosError
       return {
-        // TODO: update error structure according to the project standard
         error: {
-          status: err.response?.status,
-          data: err.response?.data || err.message,
+          status: err.response?.status ?? 500,
+          data: err.response?.data as ServerError | undefined,
         },
       }
     }

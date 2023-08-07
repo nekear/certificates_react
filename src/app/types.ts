@@ -31,3 +31,8 @@ export interface Certificate {
   price: number
   duration: number
 }
+
+export interface ServerError {
+  code: number
+  message: string
+}
