@@ -1,19 +1,18 @@
 import React from "react"
 import { useGetCertificatesQuery } from "./app/api"
+import { BrowserRouter, Route, Routes } from "react-router-dom"
+import Login from "./views/Login"
+import Certificates from "./views/Certificates";
 
 export default function App() {
-  const { data, isLoading } = useGetCertificatesQuery()
-
   return (
     <>
-      {data?.payload.map((cert) => {
-        return (
-          <div key={cert.id}>
-            <h1>{cert.name}</h1>
-            <p>{cert.description}</p>
-          </div>
-        )
-      })}
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path={"/"} element={<Certificates />} />
+        </Routes>
+      </BrowserRouter>
     </>
   )
 }
