@@ -3,8 +3,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom"
 import Login from "@views/Login"
 import Certificates from "@views/Certificates"
 
-
-
 export default function App() {
   return (
     <>
