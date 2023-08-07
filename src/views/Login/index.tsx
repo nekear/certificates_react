@@ -4,6 +4,8 @@ import { useLoginMutation } from "@features/auth/authApi"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
+import { useAppDispatch } from "@app/hooks"
+import { authenticate } from "@features/auth/authSlice"
 
 type LoginForm = {
   username: string
@@ -12,6 +14,8 @@ type LoginForm = {
 
 export default function Login() {
   const [login, { isLoading }] = useLoginMutation()
+
+  const dispatch = useAppDispatch()
 
   const {
     register,
@@ -34,9 +38,22 @@ export default function Login() {
     login({
       username: data.username,
       password: data.password,
-    }).then((res) => {
-      console.log(res)
     })
+      .unwrap()
+      .then((authState) => {
+        console.log(authState)
+
+        authState &&
+          dispatch(
+            authenticate({
+              token: authState.token,
+              user: authState.user,
+            }),
+          )
+      })
+      .catch((err) => {
+        console.log(err)
+      })
   }
 
   return (
