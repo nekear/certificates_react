@@ -10,8 +10,11 @@ import {
   Select,
   Spacer,
 } from "@chakra-ui/react"
+import { useNavigate } from "react-router-dom"
 
 export default function Header() {
+  const navigate = useNavigate()
+
   return (
     <Flex alignItems="center" bg="#fff" height="80px" padding={"0 40px"}>
       <Flex gap={4} alignItems="center">
@@ -54,9 +57,13 @@ export default function Header() {
           variant="ghost"
           icon={<span className="material-icons-outlined">shopping_cart </span>}
         />
-        <Button variant={"ghost"}>Login</Button>
+        <Button variant={"ghost"} onClick={() => navigate("login")}>
+          Login
+        </Button>
         <Divider orientation="vertical" height={"20px"} />
-        <Button variant={"ghost"}>Sign up</Button>
+        <Button variant={"ghost"} onClick={() => navigate("register")}>
+          Sign up
+        </Button>
       </Flex>
     </Flex>
   )
