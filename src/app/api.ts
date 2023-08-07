@@ -1,19 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
-
-interface PaginationResponse<T> {
-  payload: T[]
-  pagination: {
-    totalElements: number
-  }
-}
-
-interface Certificate {
-  id: number
-  name: string
-  description: string
-  price: number
-  duration: number
-}
+import { Certificate, PaginationResponse } from "@app/types";
 
 export const api = createApi({
   reducerPath: "api",

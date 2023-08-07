@@ -16,3 +16,18 @@ export type LoginRequest = {
   username: string
   password: string
 }
+
+export interface PaginationResponse<T> {
+  payload: T[]
+  pagination: {
+    totalElements: number
+  }
+}
+
+export interface Certificate {
+  id: number
+  name: string
+  description: string
+  price: number
+  duration: number
+}
