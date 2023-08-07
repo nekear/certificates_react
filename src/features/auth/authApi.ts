@@ -1,9 +1,9 @@
 import { api } from "@app/api"
-import { LoginRequest, LoginResponse } from "@app/types"
+import { Server } from "@app/types"
 
 export const authApi = api.injectEndpoints({
   endpoints: (build) => ({
-    login: build.mutation<LoginResponse, LoginRequest>({
+    login: build.mutation<Server.LoginResponse, Server.LoginRequest>({
       query: (credentials) => ({
         url: "/login",
         method: "POST",

@@ -10,7 +10,6 @@ import {
   Box,
   Button,
   Center,
-  Circle,
   FormControl,
   Heading,
   Input,
@@ -81,23 +80,25 @@ export default function Login() {
         bg="#FCFCFC"
         borderWidth={1}
         borderColor="blackAlpha.300"
+        borderRadius={8}
         padding={8}
         paddingTop={0}
         width={400}
       >
-        <Center marginBottom={50} marginTop={-100}>
-          <Circle size="200px" bg="#c4c4c4">
-            <Heading as="h1" color="#FCFCFC">
-              Logo
-            </Heading>
-          </Circle>
-        </Center>
+        <Heading
+          as={"h2"}
+          size={"md"}
+          textAlign="center"
+          margin={4}
+          textTransform={"uppercase"}
+        >
+          Certificates
+        </Heading>
         <form onSubmit={handleSubmit(onSubmit)}>
           <VStack spacing={4}>
             <FormControl isInvalid={!!errors.username}>
               <Input
                 placeholder="Login"
-                fontSize={"2xl"}
                 textAlign={"center"}
                 {...register("username")}
               />
@@ -105,7 +106,6 @@ export default function Login() {
             <FormControl isInvalid={!!errors.password}>
               <Input
                 placeholder="Password"
-                fontSize={"2xl"}
                 textAlign={"center"}
                 type="password"
                 {...register("password")}
@@ -113,9 +113,9 @@ export default function Login() {
             </FormControl>
             <Button
               colorScheme="brand"
-              fontSize={"xl"}
               type="submit"
               isLoading={isLoading}
+              w={"full"}
             >
               Login
             </Button>

@@ -1,38 +1,50 @@
-export interface User {
-  username: string
-  role: string
-  about: string
-}
+// === Entities types ===
+export namespace Entities {
+  export interface Certificate {
+    id: number
+    name: string
+    description: string
+    price: number
+    duration: number
+  }
 
-export interface AuthState {
-  token?: string
-  user?: User
-}
-
-// Because of the arch simplicity, we can use the same type for both redux state and api response
-export type LoginResponse = AuthState
-
-export type LoginRequest = {
-  username: string
-  password: string
-}
-
-export interface PaginationResponse<T> {
-  payload: T[]
-  pagination: {
-    totalElements: number
+  export interface User {
+    username: string
+    role: string
+    about: string
   }
 }
 
-export interface Certificate {
-  id: number
-  name: string
-  description: string
-  price: number
-  duration: number
+// === Everything related to redux state ===
+export namespace Redux {
+  export interface AuthState {
+    user?: Entities.User
+    token?: string
+    isAuthenticated: boolean
+  }
+
+  export type AuthPayload = Omit<AuthState, "isAuthenticated">
 }
 
-export interface ServerError {
-  code: number
-  message: string
+// === Everything related to http requests ===
+export namespace Server {
+  // Because of the arch simplicity, we can use the same type for both redux state and api response
+  export type LoginResponse = Redux.AuthPayload
+
+  export type LoginRequest = {
+    username: string
+    password: string
+  }
+
+  export interface Pagination<T> {
+    payload: T[]
+    pagination: {
+      totalElements: number
+    }
+  }
+
+  export interface Exception {
+    code: number
+    message: string
+  }
 }

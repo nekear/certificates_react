@@ -5,7 +5,6 @@ import { store } from "@app/store"
 import "./index.css"
 import App from "./App"
 import { ChakraProvider, extendTheme } from "@chakra-ui/react"
-import "material-icons/iconfont/material-icons.css"
 
 // [NOTE: good description of variants styling: https://github.com/chakra-ui/chakra-ui/issues/7556]
 
@@ -20,47 +19,27 @@ const theme = extendTheme({
   },
   colors: {
     brand: {
-      50: "#E6FFF2",
-      100: "#C2FFE0",
-      200: "#9DFFCE",
-      300: "#78FFBC",
-      400: "#53FFAA",
-      500: "#6FCF97",
-      600: "#59B57F",
-      700: "#448B67",
-      800: "#2F614F",
-      900: "#1A3737",
+      50: "#F2F2F2",
+      100: "#DBDBDB",
+      200: "#C4C4C4",
+      300: "#ADADAD",
+      400: "#969696",
+      500: "#7F7F7F",
+      600: "#686868",
+      700: "#515151",
+      800: "#3A3A3A",
+      900: "#000000",
     },
   },
   components: {
     Input: {
-      baseStyle: {
-        field: {
-          borderRadius: 0,
-        },
-      },
       variants: {
         outline: {
           field: {
-            borderColor: "gray.300",
             _focus: {
-              borderColor: "brand.600",
-              boxShadow: "none",
+              borderColor: "brand.900",
+              boxShadow: "1px 1px 0px #000000",
             },
-          },
-        },
-      },
-    },
-    Select: {
-      baseStyle: {
-        field: {
-          borderRadius: 0,
-        },
-      },
-      variants: {
-        outline: {
-          field: {
-            borderColor: "gray.300",
           },
         },
       },
@@ -68,14 +47,6 @@ const theme = extendTheme({
     Divider: {
       baseStyle: {
         borderColor: "gray.300",
-      },
-    },
-    Button: {
-      variants: {
-        solid: {
-          borderRadius: 0,
-          width: "full",
-        },
       },
     },
   },

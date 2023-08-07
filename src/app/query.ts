@@ -1,6 +1,6 @@
 import { BaseQueryFn } from "@reduxjs/toolkit/dist/query/react"
 import axios, { AxiosError, AxiosRequestConfig } from "axios"
-import { ServerError } from "@app/types"
+import { Server } from "@app/types"
 
 const API_URL = import.meta.env.VITE_API_URL
 export const axiosBaseQuery =
@@ -13,7 +13,7 @@ export const axiosBaseQuery =
       isSecure?: boolean
     },
     { payload: any },
-    { status: number; data: ServerError | undefined },
+    { status: number; data: Server.Exception | undefined },
     unknown
   > =>
   async ({ url, method = "GET", body, params, isSecure = true }) => {
@@ -31,7 +31,7 @@ export const axiosBaseQuery =
       return {
         error: {
           status: err.response?.status ?? 500,
-          data: err.response?.data as ServerError | undefined,
+          data: err.response?.data as Server.Exception | undefined,
         },
       }
     }
