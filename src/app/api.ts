@@ -1,14 +1,15 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
-import { Certificate, PaginationResponse } from "@app/types";
+import { createApi } from "@reduxjs/toolkit/query/react"
+import { Certificate, PaginationResponse } from "@app/types"
+import { axiosBaseQuery } from "@app/query"
 
 export const api = createApi({
   reducerPath: "api",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:5000",
-  }),
+  baseQuery: axiosBaseQuery(),
   endpoints: (builder) => ({
     getCertificates: builder.query<PaginationResponse<Certificate>, void>({
-      query: () => "/certificates",
+      query: () => ({
+        url: "/certificates",
+      }),
     }),
   }),
 })
