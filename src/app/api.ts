@@ -1,9 +1,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 
 interface PaginationResponse<T> {
-  payload: T[];
+  payload: T[]
   pagination: {
-    totalElements: number;
+    totalElements: number
   }
 }
 

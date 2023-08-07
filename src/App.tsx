@@ -1,8 +1,7 @@
 import React from "react"
-import { useGetCertificatesQuery } from "./app/api"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
-import Login from "./views/Login"
-import Certificates from "./views/Certificates";
+import Login from "@views/Login"
+import Certificates from "@views/Certificates"
 
 export default function App() {
   return (
