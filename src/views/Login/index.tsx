@@ -13,9 +13,9 @@ import {
   FormControl,
   Heading,
   Input,
+  useToast,
   VStack,
 } from "@chakra-ui/react"
-import { toast } from "react-toastify"
 
 type LoginForm = {
   username: string
@@ -25,6 +25,9 @@ type LoginForm = {
 export default function Login() {
   // Loading navigation from react-router-dom to redirect user after login
   const navigate = useNavigate()
+
+  // Importing chakra's toast hook to display error messages
+  const toast = useToast()
 
   // Getting RTK Query mutation hook to log in user
   const [login, { isLoading }] = useLoginMutation()
@@ -70,7 +73,11 @@ export default function Login() {
         navigate("/")
       })
       .catch((err) =>
-        toast(err.data?.message, { type: "error", position: "bottom-right" }),
+        toast({
+          title: "Error",
+          description: err.data.message || "Something went wrong",
+          status: "error",
+        }),
       )
   }
 
