@@ -1,4 +1,6 @@
 // === Entities types ===
+import { Dayjs } from "dayjs"
+
 export namespace Entities {
   export interface Certificate {
     id: number
@@ -6,8 +8,8 @@ export namespace Entities {
     description: string
     price: number
     duration: number
-    createDate: string
-    updateDate: string
+    createDate: Dayjs
+    updateDate: Dayjs
     tags: Tag[]
   }
 

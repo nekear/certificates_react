@@ -1,5 +1,5 @@
 import React from "react"
-import { useGetCertificatesQuery } from "@app/api"
+import { useGetCertificatesQuery } from "@features/certificates/certificatesApi"
 import {
   Box,
   Button,
@@ -60,7 +60,7 @@ export default function Certificates() {
             <Tbody>
               {certificates?.payload.map((certificate) => (
                 <Tr key={certificate.id}>
-                  <Td>{certificate.createDate}</Td>
+                  <Td>{certificate.createDate.format("YYYY-MM-DD")}</Td>
                   <Td>{certificate.name}</Td>
                   <Td>{certificate.tags.map((tag) => tag.name).join(",")}</Td>
                   <Td>{certificate.description}</Td>
