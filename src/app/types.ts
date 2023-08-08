@@ -63,8 +63,8 @@ export namespace Server {
     }
 
     export interface Sorting {
-      column: string
-      direction: string
+      column: "name" | "date"
+      direction: "ASC" | "DESC"
     }
 
     export interface Request {

@@ -6,6 +6,7 @@ import {
   Center,
   chakra,
   HStack,
+  IconButton,
   Input,
   Spinner,
   Table,
@@ -20,6 +21,7 @@ import { Plus } from "react-feather"
 import { Server } from "@app/types"
 import { SubmitHandler, useForm } from "react-hook-form"
 import dayjs from "dayjs"
+import SortingIcon from "@components/SortingIcon"
 
 interface SearchForm {
   search: string
@@ -29,7 +31,7 @@ export default function Certificates() {
   const [searchValues, setSearchValues] = useState<string[]>([])
   const [currentPage, setCurrentPage] = useState<number>(0)
   const [elementsPerPage, setElementsPerPage] = useState<number>(10)
-  const [sorting, setSorting] = useState<Server.Certificates.Sorting[]>([])
+  const [sorting, setSorting] = useState<Server.Certificates.Sorting>()
 
   // Getting certificates from RTK Query with filters, pagination and sorting
   const { data: certificates, isLoading } = useGetCertificatesQuery({
@@ -40,7 +42,7 @@ export default function Certificates() {
       askedPage: currentPage,
       elementsPerPage: elementsPerPage,
     },
-    sorting,
+    sorting: sorting ? [sorting] : [],
   })
 
   // Extracting certificates from RTK Query response and parsing dates
@@ -67,6 +69,25 @@ export default function Certificates() {
   // Handling search submitting
   const onSearchSubmit: SubmitHandler<SearchForm> = (data) => {
     setSearchValues(data.search.split(" "))
+  }
+
+  // Handling certificates ordering
+  const handleSort = (column: "name" | "date") => {
+    let direction: "ASC" | "DESC" = "ASC"
+
+    // If we're already sorting on this column, toggle the direction
+    if (sorting?.column === column) {
+      switch (sorting.direction) {
+        case "ASC":
+          setSorting({ column, direction: "DESC" })
+          break
+        case "DESC":
+          setSorting(undefined)
+          break
+      }
+    } else {
+      setSorting({ column, direction })
+    }
   }
 
   return (
@@ -99,8 +120,22 @@ export default function Certificates() {
           <Table variant="simple">
             <Thead>
               <Tr>
-                <Th>Datetime</Th>
-                <Th>Title</Th>
+                <Th>
+                  Datetime
+                  <SortingIcon
+                    column={"date"}
+                    currentSort={sorting}
+                    onSort={handleSort}
+                  />
+                </Th>
+                <Th>
+                  Title
+                  <SortingIcon
+                    column={"name"}
+                    currentSort={sorting}
+                    onSort={handleSort}
+                  />
+                </Th>
                 <Th>Tags</Th>
                 <Th>Description</Th>
                 <Th>Price</Th>
