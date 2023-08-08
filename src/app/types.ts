@@ -1,5 +1,4 @@
 // === Entities types ===
-import { Dayjs } from "dayjs"
 
 export namespace Entities {
   export interface Certificate {
@@ -8,8 +7,8 @@ export namespace Entities {
     description: string
     price: number
     duration: number
-    createDate: Dayjs
-    updateDate: Dayjs
+    createDate: string
+    updateDate: string
     tags: Tag[]
   }
 
@@ -51,6 +50,33 @@ export namespace Server {
     pagination: {
       totalElements: number
     }
+  }
+
+  export namespace Certificates {
+    interface Filters {
+      main: string[]
+    }
+
+    interface Pagination {
+      askedPage: number
+      elementsPerPage: number
+    }
+
+    export interface Sorting {
+      column: string
+      direction: string
+    }
+
+    export interface Request {
+      filters: Filters
+      pagination: Pagination
+      sorting: Sorting[]
+    }
+  }
+
+  export interface CertificateSorting {
+    column: "name" | "date"
+    direction: "ASC" | "DESC"
   }
 
   export interface Exception {

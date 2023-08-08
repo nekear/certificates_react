@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useMemo, useState } from "react"
 import { useGetCertificatesQuery } from "@features/certificates/certificatesApi"
 import {
   Box,
@@ -17,17 +17,67 @@ import {
   Tr,
 } from "@chakra-ui/react"
 import { Plus } from "react-feather"
+import { Server } from "@app/types"
+import { SubmitHandler, useForm } from "react-hook-form"
+import dayjs from "dayjs"
+
+interface SearchForm {
+  search: string
+}
 
 export default function Certificates() {
-  const { data: certificates, isLoading } = useGetCertificatesQuery()
+  const [searchValues, setSearchValues] = useState<string[]>([])
+  const [currentPage, setCurrentPage] = useState<number>(0)
+  const [elementsPerPage, setElementsPerPage] = useState<number>(10)
+  const [sorting, setSorting] = useState<Server.Certificates.Sorting[]>([])
+
+  // Getting certificates from RTK Query with filters, pagination and sorting
+  const { data: certificates, isLoading } = useGetCertificatesQuery({
+    filters: {
+      main: searchValues,
+    },
+    pagination: {
+      askedPage: currentPage,
+      elementsPerPage: elementsPerPage,
+    },
+    sorting,
+  })
+
+  // Extracting certificates from RTK Query response and parsing dates
+  const certificatesList = useMemo(() => {
+    return certificates?.payload.map((certificate) => ({
+      ...certificate,
+      createDate: dayjs(certificate.createDate),
+      updateDate: dayjs(certificate.updateDate),
+    }))
+  }, [certificates])
+
+  // Extracting pagination from RTK Query response
+  const certificatesPagination = useMemo(() => {
+    return certificates?.pagination
+  }, [certificates])
+
+  // Creating React Hook Form configuration with Yup validation
+  const { register, handleSubmit } = useForm<SearchForm>({
+    defaultValues: {
+      search: "",
+    },
+  })
+
+  // Handling search submitting
+  const onSearchSubmit: SubmitHandler<SearchForm> = (data) => {
+    setSearchValues(data.search.split(" "))
+  }
 
   return (
     <Box>
       <HStack>
-        <chakra.form w={"full"}>
+        <chakra.form w={"full"} onSubmit={handleSubmit(onSearchSubmit)}>
           <HStack>
-            <Input />
-            <Button type="submit">Search</Button>
+            <Input {...register("search")} />
+            <Button type="submit" isLoading={isLoading}>
+              Search
+            </Button>
           </HStack>
         </chakra.form>
         <Button rightIcon={<Plus />} colorScheme={"purple"}>
@@ -58,7 +108,7 @@ export default function Certificates() {
               </Tr>
             </Thead>
             <Tbody>
-              {certificates?.payload.map((certificate) => (
+              {certificatesList?.map((certificate) => (
                 <Tr key={certificate.id}>
                   <Td>{certificate.createDate.format("YYYY-MM-DD")}</Td>
                   <Td>{certificate.name}</Td>
