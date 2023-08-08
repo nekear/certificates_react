@@ -26,7 +26,14 @@ export default function Header() {
   }
 
   return (
-    <Flex alignItems="center" bg="#fff" height="80px" padding={"0 40px"}>
+    <Flex
+      alignItems="center"
+      bg="#fff"
+      height="80px"
+      padding={"0 40px"}
+      borderBottomWidth={1}
+      borderColor={"gray.200"}
+    >
       <Flex gap={4} alignItems="center">
         <Heading as="h4" size="md" textTransform={"uppercase"}>
           Certificates

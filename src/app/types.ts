@@ -6,12 +6,20 @@ export namespace Entities {
     description: string
     price: number
     duration: number
+    createDate: string
+    updateDate: string
+    tags: Tag[]
   }
 
   export interface User {
     username: string
     role: string
     about: string
+  }
+
+  export interface Tag {
+    id: number
+    name: string
   }
 }
 
