@@ -17,6 +17,7 @@ import {
   NumberInputField,
   Tag,
   TagCloseButton,
+  useToast,
   VStack,
 } from "@chakra-ui/react"
 import { SubmitHandler, useForm } from "react-hook-form"
@@ -24,6 +25,7 @@ import { Entities } from "@app/types"
 import { PartialBy } from "@app/utils"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
+import { useCreateCertificateMutation } from "@features/certificates/certificatesApi"
 
 interface MutationModalProps {
   isOpen: boolean
@@ -39,6 +41,10 @@ interface MutationForm {
 }
 
 export default function MutationModal({ isOpen, onClose }: MutationModalProps) {
+  const toast = useToast()
+
+  const [createCertificate, { isLoading }] = useCreateCertificateMutation()
+
   const {
     register,
     handleSubmit,
@@ -83,7 +89,24 @@ export default function MutationModal({ isOpen, onClose }: MutationModalProps) {
   const [tagsInputValue, setTagsInputValue] = useState<string>("")
 
   const onSubmit: SubmitHandler<MutationForm> = (data) => {
-    console.log(data)
+    createCertificate({
+      name: data.title,
+      description: data.description,
+      duration: data.duration,
+      price: data.price,
+      tags: data.tags.map((tag) => ({ name: tag.name })),
+    })
+      .unwrap()
+      .then(() => {
+        onClose()
+      })
+      .catch(() => {
+        toast({
+          title: "Error",
+          description: "Something went wrong",
+          status: "error",
+        })
+      })
   }
 
   return (
@@ -183,7 +206,7 @@ export default function MutationModal({ isOpen, onClose }: MutationModalProps) {
               <Button variant="outline" mr={3} onClick={onClose}>
                 Close
               </Button>
-              <Button colorScheme="purple" type="submit">
+              <Button colorScheme="purple" type="submit" isLoading={isLoading}>
                 Create
               </Button>
             </ModalFooter>

@@ -11,9 +11,24 @@ export const certificatesApi = api.injectEndpoints({
         url: "/certificates",
         body: args,
         method: "OPTIONS",
+        useAuth: false,
       }),
+      providesTags: (result) => [{ type: "Certificate", id: "LIST" }],
+    }),
+
+    createCertificate: builder.mutation<
+      Entities.Certificate,
+      Server.Certificates.DTO.Create
+    >({
+      query: (args) => ({
+        url: "/certificates",
+        body: args,
+        method: "POST",
+      }),
+      invalidatesTags: (result) => [{ type: "Certificate", id: "LIST" }],
     }),
   }),
 })
 
-export const { useGetCertificatesQuery } = certificatesApi
+export const { useGetCertificatesQuery, useCreateCertificateMutation } =
+  certificatesApi

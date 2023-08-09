@@ -8,6 +8,7 @@ export const authApi = api.injectEndpoints({
         url: "/login",
         method: "POST",
         body: credentials,
+        useAuth: false,
       }),
     }),
   }),

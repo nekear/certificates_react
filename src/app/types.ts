@@ -72,11 +72,16 @@ export namespace Server {
       pagination: Pagination
       sorting: Sorting[]
     }
-  }
 
-  export interface CertificateSorting {
-    column: "name" | "date"
-    direction: "ASC" | "DESC"
+    export namespace DTO {
+      export interface Create {
+        name: string
+        description: string
+        price: number
+        duration: number
+        tags: { name: string }[]
+      }
+    }
   }
 
   export interface Exception {

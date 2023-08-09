@@ -1,6 +1,7 @@
 import { BaseQueryFn } from "@reduxjs/toolkit/dist/query/react"
 import axios, { AxiosError, AxiosRequestConfig } from "axios"
 import { Server } from "@app/types"
+import { RootState } from "@app/store"
 
 const API_URL = import.meta.env.VITE_API_URL
 export const axiosBaseQuery =
@@ -10,20 +11,32 @@ export const axiosBaseQuery =
       method?: AxiosRequestConfig["method"]
       body?: AxiosRequestConfig["data"]
       params?: AxiosRequestConfig["params"]
-      isSecure?: boolean
+      useAuth?: boolean
     },
     { payload: any },
     { status: number; data: Server.Exception | undefined },
     unknown
   > =>
-  async ({ url, method = "GET", body, params, isSecure = true }) => {
+  async ({ url, method = "GET", body, params, useAuth = true }, api) => {
     try {
-      // TODO: add securing header
+      // Getting redux store to allow extracting auth token
+      const store = api.getState() as RootState
+
+      // Get the token from your Redux state
+      const token = store.auth.token
+
+      const headers = useAuth
+        ? {
+            Authorization: `Bearer ${token}`,
+          }
+        : {}
+
       const result = await axios({
         url: `${API_URL}${url}`,
         method,
         data: body,
         params,
+        headers,
       })
       return { data: result.data }
     } catch (axiosError) {
