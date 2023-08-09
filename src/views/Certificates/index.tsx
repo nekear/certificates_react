@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { useGetCertificatesQuery } from "@features/certificates/certificatesApi"
 import {
   Box,
@@ -48,6 +48,68 @@ export default function Certificates() {
     sorting: sorting ? [sorting] : [],
   })
 
+  // Setting up request meta changes tracking to update browser url
+  useEffect(() => {
+    const urlParams = new URLSearchParams()
+
+    // Adding search values
+    if (searchValues.length > 0) {
+      urlParams.set("search", searchValues.join(" "))
+    }
+
+    // Adding current page
+    if (currentPage !== 0) {
+      urlParams.set("page", currentPage.toString())
+    }
+
+    // Adding elements per page
+    if (elementsPerPage !== 10) {
+      urlParams.set("elementsPerPage", elementsPerPage.toString())
+    }
+
+    // Adding sorting
+    if (sorting) {
+      urlParams.set("sortingColumn", sorting.column)
+      urlParams.set("sortingDirection", sorting.direction)
+    }
+
+    const newUrl = `${window.location.pathname}?${urlParams.toString()}`
+    window.history.replaceState(null, "", newUrl)
+  }, [searchValues, currentPage, elementsPerPage, sorting])
+
+  // Retrieving filtering meta from URL
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search)
+
+    // Reading search values
+    const search = urlParams.get("search")
+    if (search) {
+      setSearchValues(search.split(" "))
+    }
+
+    // Reading current page
+    const page = urlParams.get("page")
+    if (page) {
+      setCurrentPage(Number(page))
+    }
+
+    // Reading elements per page
+    const elements = urlParams.get("elementsPerPage")
+    if (elements) {
+      setElementsPerPage(Number(elements))
+    }
+
+    // Reading sorting
+    const sortingColumn = urlParams.get("sortingColumn")
+    const sortingDirection = urlParams.get("sortingDirection")
+    if (sortingColumn && sortingDirection) {
+      setSorting({
+        column: sortingColumn as "name" | "date",
+        direction: sortingDirection as "ASC" | "DESC",
+      })
+    }
+  }, [])
+
   // Extracting certificates from RTK Query response and parsing dates
   const certificatesList = useMemo(() => {
     return certificates?.payload.map((certificate) => ({
@@ -71,7 +133,8 @@ export default function Certificates() {
 
   // Handling search submitting
   const onSearchSubmit: SubmitHandler<SearchForm> = (data) => {
-    setSearchValues(data.search.split(" "))
+    const trimmed = data.search.trim()
+    setSearchValues(trimmed.length > 0 ? trimmed.split(" ") : [])
   }
 
   // Handling certificates ordering
