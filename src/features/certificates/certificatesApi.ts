@@ -4,7 +4,7 @@ import { api } from "@app/api"
 export const certificatesApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getCertificates: builder.query<
-      Server.Pagination<Entities.Certificate>,
+      Server.Pagination<Entities.Certificate.Raw>,
       Server.Certificates.Request
     >({
       query: (args) => ({
@@ -13,11 +13,21 @@ export const certificatesApi = api.injectEndpoints({
         method: "OPTIONS",
         useAuth: false,
       }),
-      providesTags: (result) => [{ type: "Certificate", id: "LIST" }],
+      // Providing tags by mapping result payload
+      providesTags: (result) =>
+        result?.payload
+          ? [
+              ...result.payload.map((c) => ({
+                type: "Certificate" as const,
+                id: c.id,
+              })),
+              { type: "Certificate", id: "LIST" },
+            ]
+          : [{ type: "Certificate", id: "LIST" }],
     }),
 
     createCertificate: builder.mutation<
-      Entities.Certificate,
+      Entities.Certificate.Raw,
       Server.Certificates.DTO.Create
     >({
       query: (args) => ({
@@ -25,10 +35,27 @@ export const certificatesApi = api.injectEndpoints({
         body: args,
         method: "POST",
       }),
-      invalidatesTags: (result) => [{ type: "Certificate", id: "LIST" }],
+      invalidatesTags: () => [{ type: "Certificate", id: "LIST" }],
+    }),
+
+    updateCertificate: builder.mutation<
+      Entities.Certificate.Raw,
+      Server.Certificates.DTO.Update & { id: number }
+    >({
+      query: ({ id, ...args }) => ({
+        url: `/certificates/${id}`,
+        body: args,
+        method: "PUT",
+      }),
+      invalidatesTags: (result, _, args) => [
+        { type: "Certificate", id: args.id },
+      ],
     }),
   }),
 })
 
-export const { useGetCertificatesQuery, useCreateCertificateMutation } =
-  certificatesApi
+export const {
+  useGetCertificatesQuery,
+  useCreateCertificateMutation,
+  useUpdateCertificateMutation,
+} = certificatesApi

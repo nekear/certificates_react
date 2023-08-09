@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import {
   Button,
   FormControl,
@@ -25,11 +25,16 @@ import { Entities } from "@app/types"
 import { PartialBy } from "@app/utils"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
-import { useCreateCertificateMutation } from "@features/certificates/certificatesApi"
+import {
+  useCreateCertificateMutation,
+  useUpdateCertificateMutation,
+} from "@features/certificates/certificatesApi"
 
 interface MutationModalProps {
   isOpen: boolean
   onClose: () => void
+
+  certificate?: Entities.Certificate.Adapted
 }
 
 interface MutationForm {
@@ -40,10 +45,17 @@ interface MutationForm {
   tags: PartialBy<Entities.Tag, "id">[]
 }
 
-export default function MutationModal({ isOpen, onClose }: MutationModalProps) {
+export default function MutationModal({
+  isOpen,
+  onClose,
+  certificate,
+}: MutationModalProps) {
   const toast = useToast()
 
-  const [createCertificate, { isLoading }] = useCreateCertificateMutation()
+  const [createCertificate, { isLoading: isCreation }] =
+    useCreateCertificateMutation()
+  const [updateCertificate, { isLoading: isUpdating }] =
+    useUpdateCertificateMutation()
 
   const {
     register,
@@ -89,13 +101,22 @@ export default function MutationModal({ isOpen, onClose }: MutationModalProps) {
   const [tagsInputValue, setTagsInputValue] = useState<string>("")
 
   const onSubmit: SubmitHandler<MutationForm> = (data) => {
-    createCertificate({
+    // Forming request data for creation or update usage
+    const requestBody = {
       name: data.title,
       description: data.description,
       duration: data.duration,
       price: data.price,
-      tags: data.tags.map((tag) => ({ name: tag.name })),
-    })
+      tags: data.tags,
+    }
+
+    // Issuing mutation requests to RTK Query
+    const mutationPromise = certificate
+      ? updateCertificate({ id: certificate.id, ...requestBody })
+      : createCertificate(requestBody)
+
+    // Mutating modal state on mutation completion
+    mutationPromise
       .unwrap()
       .then(() => {
         onClose()
@@ -109,12 +130,27 @@ export default function MutationModal({ isOpen, onClose }: MutationModalProps) {
       })
   }
 
+  // Setting up fields values on modal open
+  useEffect(() => {
+    if (isOpen) {
+      setValue("title", certificate?.name ?? "")
+      setValue("description", certificate?.description ?? "")
+      setValue("duration", certificate?.duration ?? 0)
+      setValue("price", certificate?.price ?? 0)
+      setValue("tags", certificate?.tags ?? [])
+    }
+  }, [isOpen, certificate])
+
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Modal Title</ModalHeader>
+          <ModalHeader>
+            {certificate
+              ? `Edit certificate ${certificate.name}`
+              : "Create certificate"}
+          </ModalHeader>
           <ModalCloseButton />
 
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -206,8 +242,12 @@ export default function MutationModal({ isOpen, onClose }: MutationModalProps) {
               <Button variant="outline" mr={3} onClick={onClose}>
                 Close
               </Button>
-              <Button colorScheme="purple" type="submit" isLoading={isLoading}>
-                Create
+              <Button
+                colorScheme="purple"
+                type="submit"
+                isLoading={isCreation || isUpdating}
+              >
+                {certificate ? "Save" : "Create"}
               </Button>
             </ModalFooter>
           </form>

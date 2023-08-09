@@ -1,15 +1,27 @@
 // === Entities types ===
 
+import { Dayjs } from "dayjs"
+
 export namespace Entities {
-  export interface Certificate {
-    id: number
-    name: string
-    description: string
-    price: number
-    duration: number
-    createDate: string
-    updateDate: string
-    tags: Tag[]
+  export namespace Certificate {
+    interface Main {
+      id: number
+      name: string
+      description: string
+      price: number
+      duration: number
+      tags: Tag[]
+    }
+
+    export interface Raw extends Main {
+      createDate: string
+      updateDate: string
+    }
+
+    export interface Adapted extends Main {
+      createDate: Dayjs
+      updateDate: Dayjs
+    }
   }
 
   export interface User {
@@ -81,6 +93,8 @@ export namespace Server {
         duration: number
         tags: { name: string }[]
       }
+
+      export type Update = Create
     }
   }
 

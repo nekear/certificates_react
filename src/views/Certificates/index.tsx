@@ -6,6 +6,7 @@ import {
   Center,
   chakra,
   HStack,
+  IconButton,
   Input,
   Select,
   Spinner,
@@ -18,8 +19,8 @@ import {
   Tr,
   useDisclosure,
 } from "@chakra-ui/react"
-import { Plus } from "react-feather"
-import { Server } from "@app/types"
+import { Edit, Plus, Trash } from "react-feather"
+import { Entities, Server } from "@app/types"
 import { SubmitHandler, useForm } from "react-hook-form"
 import dayjs from "dayjs"
 import SortingIcon from "@components/SortingIcon"
@@ -125,7 +126,9 @@ export default function Certificates() {
   }, [setSearchFormValue])
 
   // Extracting certificates from RTK Query response and parsing dates
-  const certificatesList = useMemo(() => {
+  const certificatesList = useMemo<
+    Entities.Certificate.Adapted[] | undefined
+  >(() => {
     return certificates?.payload.map((certificate) => ({
       ...certificate,
       createDate: dayjs(certificate.createDate),
@@ -164,6 +167,8 @@ export default function Certificates() {
   }
 
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const [activeCertificate, setActiveCertificate] =
+    useState<Entities.Certificate.Adapted>()
 
   return (
     <Box>
@@ -226,7 +231,26 @@ export default function Certificates() {
                     <Td>{certificate.tags.map((tag) => tag.name).join(",")}</Td>
                     <Td>{certificate.description}</Td>
                     <Td>{certificate.price}</Td>
-                    <Td>actions</Td>
+                    <Td>
+                      <HStack spacing={2}>
+                        <IconButton
+                          aria-label={"Edit certificate"}
+                          icon={<Edit size={"16"} />}
+                          colorScheme={"blue"}
+                          size={"sm"}
+                          onClick={() => {
+                            setActiveCertificate(certificate)
+                            onOpen()
+                          }}
+                        />
+                        <IconButton
+                          aria-label={"Delete certificate"}
+                          icon={<Trash size={"16"} />}
+                          colorScheme={"red"}
+                          size={"sm"}
+                        />
+                      </HStack>
+                    </Td>
                   </Tr>
                 ))}
               </Tbody>
@@ -235,9 +259,9 @@ export default function Certificates() {
           <HStack marginTop={4} justifyContent={"flex-end"}>
             <Pagination
               currentPage={currentPage}
-              totalPages={
-                certificatesPagination?.totalElements ?? 1 / elementsPerPage
-              }
+              totalPages={Math.ceil(
+                (certificatesPagination?.totalElements ?? 1) / elementsPerPage,
+              )}
               onPageChange={setCurrentPage}
             />
             <Select
@@ -255,7 +279,15 @@ export default function Certificates() {
           </HStack>
         </>
       )}
-      <MutationModal isOpen={isOpen} onClose={onClose} />
+
+      <MutationModal
+        isOpen={isOpen}
+        onClose={() => {
+          onClose()
+          setActiveCertificate(undefined)
+        }}
+        certificate={activeCertificate}
+      />
     </Box>
   )
 }
