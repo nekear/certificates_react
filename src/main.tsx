@@ -44,6 +44,18 @@ const theme = extendTheme({
         },
       },
     },
+    NumberInput: {
+      variants: {
+        outline: {
+          field: {
+            _focus: {
+              borderColor: "brand.900",
+              boxShadow: "1px 1px 0px #000000",
+            },
+          },
+        },
+      },
+    },
     Divider: {
       baseStyle: {
         borderColor: "gray.300",

@@ -5,7 +5,6 @@ import {
   Button,
   Center,
   chakra,
-  Flex,
   HStack,
   Input,
   Select,
@@ -17,6 +16,7 @@ import {
   Th,
   Thead,
   Tr,
+  useDisclosure,
 } from "@chakra-ui/react"
 import { Plus } from "react-feather"
 import { Server } from "@app/types"
@@ -24,6 +24,7 @@ import { SubmitHandler, useForm } from "react-hook-form"
 import dayjs from "dayjs"
 import SortingIcon from "@components/SortingIcon"
 import Pagination from "@components/Pagination"
+import MutationModal from "@views/Certificates/components/MutationModal"
 
 interface SearchForm {
   search: string
@@ -92,6 +93,8 @@ export default function Certificates() {
     }
   }
 
+  const { isOpen, onOpen, onClose } = useDisclosure()
+
   return (
     <Box>
       <HStack>
@@ -103,7 +106,7 @@ export default function Certificates() {
             </Button>
           </HStack>
         </chakra.form>
-        <Button rightIcon={<Plus />} colorScheme={"purple"}>
+        <Button rightIcon={<Plus />} colorScheme={"purple"} onClick={onOpen}>
           Add
         </Button>
       </HStack>
@@ -182,6 +185,7 @@ export default function Certificates() {
           </HStack>
         </>
       )}
+      <MutationModal isOpen={isOpen} onClose={onClose} />
     </Box>
   )
 }
