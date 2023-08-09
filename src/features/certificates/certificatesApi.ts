@@ -51,6 +51,14 @@ export const certificatesApi = api.injectEndpoints({
         { type: "Certificate", id: args.id },
       ],
     }),
+
+    deleteCertificate: builder.mutation<void, number>({
+      query: (id) => ({
+        url: `/certificates/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, _, id) => [{ type: "Certificate", id }],
+    }),
   }),
 })
 
@@ -58,4 +66,5 @@ export const {
   useGetCertificatesQuery,
   useCreateCertificateMutation,
   useUpdateCertificateMutation,
+  useDeleteCertificateMutation,
 } = certificatesApi

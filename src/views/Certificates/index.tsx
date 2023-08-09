@@ -26,6 +26,7 @@ import dayjs from "dayjs"
 import SortingIcon from "@components/SortingIcon"
 import Pagination from "@components/Pagination"
 import MutationModal from "@views/Certificates/components/MutationModal"
+import DeletionModal from "@views/Certificates/components/DeletionModal"
 
 interface SearchForm {
   search: string
@@ -166,8 +167,21 @@ export default function Certificates() {
     }
   }
 
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  const [activeCertificate, setActiveCertificate] =
+  const {
+    isOpen: isMutationModalOpen,
+    onOpen: onMutationModalOpen,
+    onClose: onMutationModalClose,
+  } = useDisclosure()
+  const {
+    isOpen: isDeletionModalOpen,
+    onOpen: onDeletionModalOpen,
+    onClose: onDeletionModalClose,
+  } = useDisclosure()
+
+  const [activeMutationCertificate, setActiveMutationCertificate] =
+    useState<Entities.Certificate.Adapted>()
+
+  const [activeDeletionCertificate, setActiveDeletionCertificate] =
     useState<Entities.Certificate.Adapted>()
 
   return (
@@ -181,7 +195,11 @@ export default function Certificates() {
             </Button>
           </HStack>
         </chakra.form>
-        <Button rightIcon={<Plus />} colorScheme={"purple"} onClick={onOpen}>
+        <Button
+          rightIcon={<Plus />}
+          colorScheme={"purple"}
+          onClick={onMutationModalOpen}
+        >
           Add
         </Button>
       </HStack>
@@ -239,8 +257,8 @@ export default function Certificates() {
                           colorScheme={"blue"}
                           size={"sm"}
                           onClick={() => {
-                            setActiveCertificate(certificate)
-                            onOpen()
+                            setActiveMutationCertificate(certificate)
+                            onMutationModalOpen()
                           }}
                         />
                         <IconButton
@@ -248,6 +266,10 @@ export default function Certificates() {
                           icon={<Trash size={"16"} />}
                           colorScheme={"red"}
                           size={"sm"}
+                          onClick={() => {
+                            setActiveDeletionCertificate(certificate)
+                            onDeletionModalOpen()
+                          }}
                         />
                       </HStack>
                     </Td>
@@ -281,12 +303,21 @@ export default function Certificates() {
       )}
 
       <MutationModal
-        isOpen={isOpen}
+        isOpen={isMutationModalOpen}
         onClose={() => {
-          onClose()
-          setActiveCertificate(undefined)
+          onMutationModalClose()
+          setActiveMutationCertificate(undefined)
         }}
-        certificate={activeCertificate}
+        certificate={activeMutationCertificate}
+      />
+
+      <DeletionModal
+        isOpen={isDeletionModalOpen}
+        onClose={() => {
+          onDeletionModalClose()
+          setActiveDeletionCertificate(undefined)
+        }}
+        certificate={activeDeletionCertificate}
       />
     </Box>
   )
