@@ -48,6 +48,17 @@ export default function Certificates() {
     sorting: sorting ? [sorting] : [],
   })
 
+  // Creating React Hook Form configuration with Yup validation
+  const {
+    register,
+    handleSubmit,
+    setValue: setSearchFormValue,
+  } = useForm<SearchForm>({
+    defaultValues: {
+      search: "",
+    },
+  })
+
   // Setting up request meta changes tracking to update browser url
   useEffect(() => {
     const urlParams = new URLSearchParams()
@@ -63,7 +74,7 @@ export default function Certificates() {
     }
 
     // Adding elements per page
-    if (elementsPerPage !== 10) {
+    if (elementsPerPage !== 1) {
       urlParams.set("elementsPerPage", elementsPerPage.toString())
     }
 
@@ -73,8 +84,10 @@ export default function Certificates() {
       urlParams.set("sortingDirection", sorting.direction)
     }
 
-    const newUrl = `${window.location.pathname}?${urlParams.toString()}`
-    window.history.replaceState(null, "", newUrl)
+    if (urlParams.size > 0) {
+      const newUrl = `${window.location.pathname}?${urlParams.toString()}`
+      window.history.replaceState(null, "", newUrl)
+    }
   }, [searchValues, currentPage, elementsPerPage, sorting])
 
   // Retrieving filtering meta from URL
@@ -85,6 +98,7 @@ export default function Certificates() {
     const search = urlParams.get("search")
     if (search) {
       setSearchValues(search.split(" "))
+      setSearchFormValue("search", search)
     }
 
     // Reading current page
@@ -108,7 +122,7 @@ export default function Certificates() {
         direction: sortingDirection as "ASC" | "DESC",
       })
     }
-  }, [])
+  }, [setSearchFormValue])
 
   // Extracting certificates from RTK Query response and parsing dates
   const certificatesList = useMemo(() => {
@@ -123,13 +137,6 @@ export default function Certificates() {
   const certificatesPagination = useMemo(() => {
     return certificates?.pagination
   }, [certificates])
-
-  // Creating React Hook Form configuration with Yup validation
-  const { register, handleSubmit } = useForm<SearchForm>({
-    defaultValues: {
-      search: "",
-    },
-  })
 
   // Handling search submitting
   const onSearchSubmit: SubmitHandler<SearchForm> = (data) => {
