@@ -119,7 +119,7 @@ export default function Login() {
               />
             </FormControl>
             <Button
-              colorScheme="brand"
+              colorScheme="purple"
               type="submit"
               isLoading={isLoading}
               w={"full"}

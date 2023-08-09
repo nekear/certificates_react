@@ -5,9 +5,10 @@ import {
   Button,
   Center,
   chakra,
+  Flex,
   HStack,
-  IconButton,
   Input,
+  Select,
   Spinner,
   Table,
   TableContainer,
@@ -22,6 +23,7 @@ import { Server } from "@app/types"
 import { SubmitHandler, useForm } from "react-hook-form"
 import dayjs from "dayjs"
 import SortingIcon from "@components/SortingIcon"
+import Pagination from "@components/Pagination"
 
 interface SearchForm {
   search: string
@@ -30,7 +32,7 @@ interface SearchForm {
 export default function Certificates() {
   const [searchValues, setSearchValues] = useState<string[]>([])
   const [currentPage, setCurrentPage] = useState<number>(0)
-  const [elementsPerPage, setElementsPerPage] = useState<number>(10)
+  const [elementsPerPage, setElementsPerPage] = useState<number>(1)
   const [sorting, setSorting] = useState<Server.Certificates.Sorting>()
 
   // Getting certificates from RTK Query with filters, pagination and sorting
@@ -116,46 +118,69 @@ export default function Certificates() {
           />
         </Center>
       ) : (
-        <TableContainer marginTop={8}>
-          <Table variant="simple">
-            <Thead>
-              <Tr>
-                <Th>
-                  Datetime
-                  <SortingIcon
-                    column={"date"}
-                    currentSort={sorting}
-                    onSort={handleSort}
-                  />
-                </Th>
-                <Th>
-                  Title
-                  <SortingIcon
-                    column={"name"}
-                    currentSort={sorting}
-                    onSort={handleSort}
-                  />
-                </Th>
-                <Th>Tags</Th>
-                <Th>Description</Th>
-                <Th>Price</Th>
-                <Th>Actions</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {certificatesList?.map((certificate) => (
-                <Tr key={certificate.id}>
-                  <Td>{certificate.createDate.format("YYYY-MM-DD")}</Td>
-                  <Td>{certificate.name}</Td>
-                  <Td>{certificate.tags.map((tag) => tag.name).join(",")}</Td>
-                  <Td>{certificate.description}</Td>
-                  <Td>{certificate.price}</Td>
-                  <Td>actions</Td>
+        <>
+          <TableContainer marginTop={8}>
+            <Table variant="simple">
+              <Thead>
+                <Tr>
+                  <Th>
+                    Datetime
+                    <SortingIcon
+                      column={"date"}
+                      currentSort={sorting}
+                      onSort={handleSort}
+                    />
+                  </Th>
+                  <Th>
+                    Title
+                    <SortingIcon
+                      column={"name"}
+                      currentSort={sorting}
+                      onSort={handleSort}
+                    />
+                  </Th>
+                  <Th>Tags</Th>
+                  <Th>Description</Th>
+                  <Th>Price</Th>
+                  <Th>Actions</Th>
                 </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        </TableContainer>
+              </Thead>
+              <Tbody>
+                {certificatesList?.map((certificate) => (
+                  <Tr key={certificate.id}>
+                    <Td>{certificate.createDate.format("YYYY-MM-DD")}</Td>
+                    <Td>{certificate.name}</Td>
+                    <Td>{certificate.tags.map((tag) => tag.name).join(",")}</Td>
+                    <Td>{certificate.description}</Td>
+                    <Td>{certificate.price}</Td>
+                    <Td>actions</Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          </TableContainer>
+          <HStack marginTop={4} justifyContent={"flex-end"}>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={
+                certificatesPagination?.totalElements ?? 1 / elementsPerPage
+              }
+              onPageChange={setCurrentPage}
+            />
+            <Select
+              value={elementsPerPage}
+              size={"sm"}
+              onChange={(e) => {
+                setElementsPerPage(parseInt(e.target.selectedOptions[0].value))
+              }}
+              w={100}
+            >
+              <option value="1">1</option>
+              <option value="5">5</option>
+              <option value="10">10</option>
+            </Select>
+          </HStack>
+        </>
       )}
     </Box>
   )
