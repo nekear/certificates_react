@@ -5,7 +5,7 @@ export const authApi = api.injectEndpoints({
   endpoints: (build) => ({
     login: build.mutation<Server.LoginResponse, Server.LoginRequest>({
       query: (credentials) => ({
-        url: "/login",
+        url: "/auth/login",
         method: "POST",
         body: credentials,
         useAuth: false,
@@ -14,13 +14,24 @@ export const authApi = api.injectEndpoints({
 
     register: build.mutation<void, Server.RegistrationRequest>({
       query: (credentials) => ({
-        url: "/signup",
+        url: "/auth/register",
         method: "POST",
         body: credentials,
         useAuth: false,
       }),
     }),
+
+    getMe: build.query<Server.MeResponse, void>({
+      query: (credentials) => ({
+        url: "/auth/me",
+        method: "GET",
+      }),
+    }),
   }),
 })
 
-export const { useLoginMutation, useRegisterMutation } = authApi
+export const {
+  useLoginMutation,
+  useRegisterMutation,
+  useGetMeQuery,
+} = authApi

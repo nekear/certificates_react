@@ -20,7 +20,6 @@ import * as yup from "yup"
 const registrationFormSchema = yup.object({
   username: yup.string().required(),
   password: yup.string().required(),
-  about: yup.string(),
 })
 
 type RegistrationFormTyping = yup.InferType<typeof registrationFormSchema>
@@ -47,7 +46,6 @@ export default function Registration() {
     defaultValues: {
       username: "",
       password: "",
-      about: "",
     },
     resolver: yupResolver(registrationFormSchema),
   })
@@ -57,7 +55,6 @@ export default function Registration() {
     signup({
       username: data.username,
       password: data.password,
-      about: data.about,
     })
       .unwrap()
       .then((authState) => {
@@ -108,13 +105,6 @@ export default function Registration() {
                 textAlign={"center"}
                 type="password"
                 {...register("password")}
-              />
-            </FormControl>
-            <FormControl isInvalid={!!errors.about}>
-              <Input
-                placeholder="About"
-                textAlign={"center"}
-                {...register("about")}
               />
             </FormControl>
             <Button

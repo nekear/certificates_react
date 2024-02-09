@@ -1,9 +1,14 @@
 import { BaseQueryFn } from "@reduxjs/toolkit/dist/query/react"
 import axios, { AxiosError, AxiosRequestConfig } from "axios"
-import { Server } from "@app/types"
 import { RootState } from "@app/store"
 
 const API_URL = import.meta.env.VITE_API_URL
+
+export type FetchServerError = {
+  status: number
+  message: string
+}
+
 export const axiosBaseQuery =
   (): BaseQueryFn<
     {
@@ -14,7 +19,7 @@ export const axiosBaseQuery =
       useAuth?: boolean
     },
     { payload: any },
-    { status: number; data: Server.Exception | undefined },
+    FetchServerError,
     unknown
   > =>
   async ({ url, method = "GET", body, params, useAuth = true }, api) => {
@@ -40,14 +45,27 @@ export const axiosBaseQuery =
       })
       return { data: result.data }
     } catch (axiosError) {
-      const err = axiosError as AxiosError
+      const err = axiosError as AxiosError as AxiosError<FetchServerError>
       return {
         error: {
           status: err.response?.status ?? 500,
-          data: err.response?.data as Server.Exception | undefined,
+          message: err.response?.data.message ?? err.message,
         },
       }
     }
   }
 
 export const transformResponse = (r: { payload: any }) => r.payload
+
+/**
+ * Type predicate to narrow an unknown error to an object with a string 'message' property
+ */
+export function isErrorWithMessage(error: unknown): error is FetchServerError {
+  return (
+    typeof error === "object" &&
+    error != null &&
+    "message" in error &&
+    typeof (error as any).message === "string" &&
+    "status" in error
+  )
+}

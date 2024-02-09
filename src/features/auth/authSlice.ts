@@ -6,10 +6,14 @@ export const authSlice = createSlice({
   initialState: {} as Redux.AuthState,
   reducers: {
     authenticate: (state, action: PayloadAction<Redux.AuthPayload>) => {
-      state.user = action.payload.user
       state.token = action.payload.token
       state.isAuthenticated = true
     },
+
+    setUser: (state, action: PayloadAction<Redux.SetUserPayload>) => {
+      state.user = action.payload
+    },
+
     logout: (state) => {
       state.user = undefined
       state.token = undefined
@@ -18,6 +22,6 @@ export const authSlice = createSlice({
   },
 })
 
-export const { authenticate, logout } = authSlice.actions
+export const { authenticate, setUser, logout } = authSlice.actions
 
 export default authSlice.reducer

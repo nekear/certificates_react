@@ -1,11 +1,11 @@
 import React from "react"
-import { Link as ReactRouterLink , useNavigate } from "react-router-dom";
-import { useLoginMutation } from "@features/auth/authApi"
+import { Link as ReactRouterLink, useNavigate } from "react-router-dom"
+import { authApi, useLoginMutation } from "@features/auth/authApi"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 import { useAppDispatch } from "@app/hooks"
-import { authenticate } from "@features/auth/authSlice"
+import { authenticate, setUser } from "@features/auth/authSlice";
 import {
   Box,
   Button,
@@ -15,8 +15,9 @@ import {
   Input,
   useToast,
   VStack,
-  Link as ChakraLink
+  Link as ChakraLink,
 } from "@chakra-ui/react"
+import { isErrorWithMessage } from "@app/query"
 
 type LoginForm = {
   username: string
@@ -55,31 +56,42 @@ export default function Login() {
   })
 
   // Handling form submition and logging in user if successful
-  const onSubmit: SubmitHandler<LoginForm> = (data) => {
-    login({
-      username: data.username,
-      password: data.password,
-    })
-      .unwrap()
-      .then((authState) => {
-        authState &&
-          dispatch(
-            authenticate({
-              token: authState.token,
-              user: authState.user,
-            }),
-          )
+  const onSubmit: SubmitHandler<LoginForm> = async (data) => {
+    let meQuery
+    try {
+      const loginResponse = await login({
+        username: data.username,
+        password: data.password,
+      }).unwrap()
 
-        // Redirecting user to Certificates page
-        navigate("/")
-      })
-      .catch((err) =>
-        toast({
-          title: "Error",
-          description: err.data.message || "Something went wrong",
-          status: "error",
+      dispatch(
+        authenticate({
+          token: loginResponse.token,
         }),
       )
+
+      meQuery = dispatch(authApi.endpoints.getMe.initiate(undefined, {forceRefetch: true}))
+
+      const meResponse = await meQuery.unwrap()
+
+      dispatch(
+        setUser({
+          username: meResponse.username,
+          role: meResponse.role,
+        }),
+      )
+
+      // Redirecting user to Certificates page
+      navigate("/")
+    } catch (e) {
+      toast({
+        title: "Error",
+        description: isErrorWithMessage(e) ? e.message : "Something went wrong",
+        status: "error",
+      })
+    } finally {
+      meQuery?.unsubscribe()
+    }
   }
 
   return (
@@ -129,7 +141,14 @@ export default function Login() {
             </Button>
           </VStack>
         </form>
-        <ChakraLink as={ReactRouterLink} to={"/register"} textAlign={"center"} marginTop={2} display={"block"} color="purple.700">
+        <ChakraLink
+          as={ReactRouterLink}
+          to={"/register"}
+          textAlign={"center"}
+          marginTop={2}
+          display={"block"}
+          color="purple.700"
+        >
           Don't have an account yet?
         </ChakraLink>
       </Box>

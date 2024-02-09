@@ -26,14 +26,15 @@ export namespace Entities {
 
   export interface User {
     username: string
-    role: string
-    about: string
+    role: Role
   }
 
   export interface Tag {
     id: number
     name: string
   }
+
+  export type Role = "ADMIN" | "USER"
 }
 
 // === Everything related to redux state ===
@@ -44,13 +45,14 @@ export namespace Redux {
     isAuthenticated: boolean
   }
 
-  export type AuthPayload = Omit<AuthState, "isAuthenticated">
+  export type AuthPayload = Omit<AuthState, "isAuthenticated" | "user">
+  export type SetUserPayload = Entities.User;
 }
 
 // === Everything related to http requests ===
 export namespace Server {
   // Because of the arch simplicity, we can use the same type for both redux state and api response
-  export type LoginResponse = Redux.AuthPayload
+  export type LoginResponse = { token: string; }
 
   export type LoginRequest = {
     username: string
@@ -60,7 +62,11 @@ export namespace Server {
   export type RegistrationRequest = {
     username: string
     password: string
-    about?: string
+  }
+
+  export type MeResponse = {
+    username: string
+    role: Entities.Role
   }
 
   export interface Pagination<T> {
