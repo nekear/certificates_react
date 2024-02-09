@@ -130,7 +130,7 @@ export default function Certificates() {
   const certificatesList = useMemo<
     Entities.Certificate.Adapted[] | undefined
   >(() => {
-    return certificates?.payload.map((certificate) => ({
+    return (certificates?.payload ?? []).map((certificate) => ({
       ...certificate,
       createDate: dayjs(certificate.createDate),
       updateDate: dayjs(certificate.updateDate),

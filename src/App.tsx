@@ -4,6 +4,7 @@ import Login from "@views/Login"
 import Certificates from "@views/Certificates"
 import MainLayout from "@components/MainLayout"
 import PrivateRoute from "@components/PrivateRoute"
+import Registration from "@views/Registration";
 
 export default function App() {
   return (
@@ -24,6 +25,8 @@ export default function App() {
 
           {/* Public routes */}
           <Route path="/login" element={<Login />} />
+
+          <Route path="/register" element={<Registration />} />
         </Routes>
       </BrowserRouter>
     </>

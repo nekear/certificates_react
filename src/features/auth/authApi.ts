@@ -11,7 +11,16 @@ export const authApi = api.injectEndpoints({
         useAuth: false,
       }),
     }),
+
+    register: build.mutation<void, Server.RegistrationRequest>({
+      query: (credentials) => ({
+        url: "/signup",
+        method: "POST",
+        body: credentials,
+        useAuth: false,
+      }),
+    }),
   }),
 })
 
-export const { useLoginMutation } = authApi
+export const { useLoginMutation, useRegisterMutation } = authApi

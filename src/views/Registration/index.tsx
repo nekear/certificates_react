@@ -1,11 +1,5 @@
 import React from "react"
-import { Link as ReactRouterLink , useNavigate } from "react-router-dom";
-import { useLoginMutation } from "@features/auth/authApi"
-import { SubmitHandler, useForm } from "react-hook-form"
-import { yupResolver } from "@hookform/resolvers/yup"
-import * as yup from "yup"
-import { useAppDispatch } from "@app/hooks"
-import { authenticate } from "@features/auth/authSlice"
+import { Link as ReactRouterLink, useNavigate } from "react-router-dom"
 import {
   Box,
   Button,
@@ -15,15 +9,23 @@ import {
   Input,
   useToast,
   VStack,
-  Link as ChakraLink
+  Link as ChakraLink,
 } from "@chakra-ui/react"
+import { useRegisterMutation } from "@features/auth/authApi"
+import { useAppDispatch } from "@app/hooks"
+import { SubmitHandler, useForm } from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
+import * as yup from "yup"
 
-type LoginForm = {
-  username: string
-  password: string
-}
+const registrationFormSchema = yup.object({
+  username: yup.string().required(),
+  password: yup.string().required(),
+  about: yup.string(),
+})
 
-export default function Login() {
+type RegistrationFormTyping = yup.InferType<typeof registrationFormSchema>
+
+export default function Registration() {
   // Loading navigation from react-router-dom to redirect user after login
   const navigate = useNavigate()
 
@@ -31,7 +33,7 @@ export default function Login() {
   const toast = useToast()
 
   // Getting RTK Query mutation hook to log in user
-  const [login, { isLoading }] = useLoginMutation()
+  const [signup, { isLoading }] = useRegisterMutation()
 
   // Using Redux to dispatch authenticate action
   const dispatch = useAppDispatch()
@@ -41,37 +43,26 @@ export default function Login() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginForm>({
+  } = useForm<RegistrationFormTyping>({
     defaultValues: {
       username: "",
       password: "",
+      about: "",
     },
-    resolver: yupResolver(
-      yup.object().shape({
-        username: yup.string().required(),
-        password: yup.string().required(),
-      }),
-    ),
+    resolver: yupResolver(registrationFormSchema),
   })
 
   // Handling form submition and logging in user if successful
-  const onSubmit: SubmitHandler<LoginForm> = (data) => {
-    login({
+  const onSubmit: SubmitHandler<RegistrationFormTyping> = (data) => {
+    signup({
       username: data.username,
       password: data.password,
+      about: data.about,
     })
       .unwrap()
       .then((authState) => {
-        authState &&
-          dispatch(
-            authenticate({
-              token: authState.token,
-              user: authState.user,
-            }),
-          )
-
-        // Redirecting user to Certificates page
-        navigate("/")
+        // Redirecting user to login
+        navigate("/login")
       })
       .catch((err) =>
         toast({
@@ -119,18 +110,32 @@ export default function Login() {
                 {...register("password")}
               />
             </FormControl>
+            <FormControl isInvalid={!!errors.about}>
+              <Input
+                placeholder="About"
+                textAlign={"center"}
+                {...register("about")}
+              />
+            </FormControl>
             <Button
               colorScheme="purple"
               type="submit"
               isLoading={isLoading}
               w={"full"}
             >
-              Login
+              Create account
             </Button>
           </VStack>
         </form>
-        <ChakraLink as={ReactRouterLink} to={"/register"} textAlign={"center"} marginTop={2} display={"block"} color="purple.700">
-          Don't have an account yet?
+        <ChakraLink
+          as={ReactRouterLink}
+          to={"/login"}
+          textAlign={"center"}
+          marginTop={2}
+          display={"block"}
+          color="purple.700"
+        >
+          Already have an account?
         </ChakraLink>
       </Box>
     </Center>

@@ -57,6 +57,12 @@ export namespace Server {
     password: string
   }
 
+  export type RegistrationRequest = {
+    username: string
+    password: string
+    about?: string
+  }
+
   export interface Pagination<T> {
     payload: T[]
     pagination: {
