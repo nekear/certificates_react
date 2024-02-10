@@ -1,5 +1,6 @@
 import { Entities, Server } from "@app/types"
 import { api } from "@app/api"
+import { serializeNestedObjects } from "@app/query";
 
 export const certificatesApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -9,9 +10,12 @@ export const certificatesApi = api.injectEndpoints({
     >({
       query: (args) => ({
         url: "/certificates",
-        body: args,
-        method: "OPTIONS",
-        useAuth: false,
+        params: serializeNestedObjects({
+          // filters: args.filters.main.length ? args.filters : undefined,
+          pagination: args.pagination,
+          sorting: args.sorting,
+        }),
+        method: "GET",
       }),
       // Providing tags by mapping result payload
       providesTags: (result) =>

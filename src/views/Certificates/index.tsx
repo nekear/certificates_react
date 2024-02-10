@@ -33,7 +33,7 @@ interface SearchForm {
 }
 
 export default function Certificates() {
-  const [searchValues, setSearchValues] = useState<string[]>([])
+  const [searchValue, setSearchValue] = useState<string>("")
   const [currentPage, setCurrentPage] = useState<number>(0)
   const [elementsPerPage, setElementsPerPage] = useState<number>(1)
   const [sorting, setSorting] = useState<Server.Certificates.Sorting>()
@@ -41,7 +41,7 @@ export default function Certificates() {
   // Getting certificates from RTK Query with filters, pagination and sorting
   const { data: certificates, isLoading } = useGetCertificatesQuery({
     filters: {
-      main: searchValues,
+      main: searchValue,
     },
     pagination: {
       askedPage: currentPage,
@@ -66,8 +66,8 @@ export default function Certificates() {
     const urlParams = new URLSearchParams()
 
     // Adding search values
-    if (searchValues.length > 0) {
-      urlParams.set("search", searchValues.join(" "))
+    if (searchValue.length > 0) {
+      urlParams.set("search", searchValue)
     }
 
     // Adding current page
@@ -90,7 +90,7 @@ export default function Certificates() {
       const newUrl = `${window.location.pathname}?${urlParams.toString()}`
       window.history.replaceState(null, "", newUrl)
     }
-  }, [searchValues, currentPage, elementsPerPage, sorting])
+  }, [searchValue, currentPage, elementsPerPage, sorting])
 
   // Retrieving filtering meta from URL
   useEffect(() => {
@@ -99,7 +99,7 @@ export default function Certificates() {
     // Reading search values
     const search = urlParams.get("search")
     if (search) {
-      setSearchValues(search.split(" "))
+      setSearchValue(search)
       setSearchFormValue("search", search)
     }
 
@@ -145,7 +145,7 @@ export default function Certificates() {
   // Handling search submitting
   const onSearchSubmit: SubmitHandler<SearchForm> = (data) => {
     const trimmed = data.search.trim()
-    setSearchValues(trimmed.length > 0 ? trimmed.split(" ") : [])
+    setSearchValue(trimmed)
   }
 
   // Handling certificates ordering

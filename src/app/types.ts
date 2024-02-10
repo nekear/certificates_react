@@ -78,7 +78,7 @@ export namespace Server {
 
   export namespace Certificates {
     interface Filters {
-      main: string[]
+      main: string
     }
 
     interface Pagination {
