@@ -10,6 +10,7 @@ export const authApi = api.injectEndpoints({
         body: credentials,
         useAuth: false,
       }),
+      invalidatesTags: ["Certificate"],
     }),
 
     register: build.mutation<void, Server.RegistrationRequest>({
