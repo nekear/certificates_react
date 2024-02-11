@@ -20,7 +20,7 @@ import {
   useToast,
   VStack,
 } from "@chakra-ui/react"
-import { SubmitHandler, useForm } from "react-hook-form"
+import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
 import { Entities } from "@app/types"
 import { PartialBy } from "@app/utils"
 import { yupResolver } from "@hookform/resolvers/yup"
@@ -59,10 +59,12 @@ export default function MutationModal({
 
   const {
     register,
+    control,
     handleSubmit,
     setValue,
     getValues,
     formState: { errors },
+    reset
   } = useForm<MutationForm>({
     defaultValues: {
       title: "",
@@ -99,6 +101,12 @@ export default function MutationModal({
   })
 
   const [tagsInputValue, setTagsInputValue] = useState<string>("")
+
+  const {fields: tags, append, remove} = useFieldArray({
+    control,
+    name: "tags",
+    keyName: "loop_id"
+  })
 
   const onSubmit: SubmitHandler<MutationForm> = (data) => {
     // Forming request data for creation or update usage
@@ -138,6 +146,8 @@ export default function MutationModal({
       setValue("duration", certificate?.duration ?? 0)
       setValue("price", certificate?.price ?? 0)
       setValue("tags", certificate?.tags ?? [])
+    }else{
+      reset()
     }
   }, [isOpen, certificate])
 
@@ -216,18 +226,12 @@ export default function MutationModal({
                     }}
                   />
                   <HStack spacing={2} w={"full"} marginTop={2}>
-                    {getValues("tags").map((tag, index) => (
-                      <Tag key={index}>
+                    {tags.map((tag, index) => (
+                      <Tag key={tag.loop_id}>
                         {tag.name}
                         <TagCloseButton
                           onClick={() => {
-                            setValue(
-                              "tags",
-                              getValues("tags").filter((_, i) => i !== index),
-                              {
-                                shouldValidate: true,
-                              },
-                            )
+                            remove(index)
                           }}
                         />
                       </Tag>

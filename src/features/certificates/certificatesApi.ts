@@ -1,6 +1,6 @@
 import { Entities, Server } from "@app/types"
 import { api } from "@app/api"
-import { serializeNestedObjects } from "@app/query";
+import { removeEmpty, serializeNestedObjects } from "@app/utils";
 
 export const certificatesApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -11,9 +11,11 @@ export const certificatesApi = api.injectEndpoints({
       query: (args) => ({
         url: "/certificates",
         params: serializeNestedObjects({
-          // filters: args.filters.main.length ? args.filters : undefined,
-          pagination: args.pagination,
+          filters: removeEmpty({
+            main: args.filters.main,
+          }),
           sorting: args.sorting,
+          pagination: args.pagination
         }),
         method: "GET",
       }),

@@ -235,8 +235,8 @@ export default function Certificates() {
                       onSort={handleSort}
                     />
                   </Th>
-                  <Th>Tags</Th>
                   <Th>Description</Th>
+                  <Th>Tags</Th>
                   <Th>Price</Th>
                   <Th>Actions</Th>
                 </Tr>
@@ -246,8 +246,8 @@ export default function Certificates() {
                   <Tr key={certificate.id}>
                     <Td>{certificate.createDate.format("YYYY-MM-DD")}</Td>
                     <Td>{certificate.name}</Td>
-                    <Td>{certificate.tags.map((tag) => tag.name).join(",")}</Td>
                     <Td>{certificate.description}</Td>
+                    <Td>{certificate.tags.map((tag) => tag.name).join(",")}</Td>
                     <Td>{certificate.price}</Td>
                     <Td>
                       <HStack spacing={2}>

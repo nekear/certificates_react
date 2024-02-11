@@ -57,36 +57,7 @@ export const axiosBaseQuery =
 
 export const transformResponse = (r: { payload: any }) => r.payload
 
-export function serializeNestedObjects(obj: any, parentKey: string = '', result: {[key: string]: any} = {}): {[key: string]: any} {
-  Object.keys(obj).forEach(key => {
-    // Check if the current key is an array index or an object key
-    const isArrayIndex = !isNaN(Number(key));
-    const fullKey = parentKey ?
-      (isArrayIndex ? `${parentKey}[${key}]` : `${parentKey}.${key}`)
-      : key;
-    if (typeof obj[key] === 'object' && obj[key] !== null) {
-      // If it's an array, pass the key as is (without conversion to dot notation)
-      if (Array.isArray(obj[key])) {
-        // @ts-ignore
-        obj[key].forEach((item, index) => {
-          if (typeof item === 'object' && item !== null) {
-            serializeNestedObjects(item, `${fullKey}[${index}]`, result);
-          } else {
-            // Directly assign non-object values within an array
-            result[`${fullKey}[${index}]`] = item;
-          }
-        });
-      } else {
-        // Recurse for nested objects
-        serializeNestedObjects(obj[key], fullKey, result);
-      }
-    } else {
-      // Assign non-object and non-array values directly
-      result[fullKey] = obj[key];
-    }
-  });
-  return result;
-}
+
 
 /**
  * Type predicate to narrow an unknown error to an object with a string 'message' property
