@@ -158,7 +158,7 @@ export default function MutationModal({
         <ModalContent>
           <ModalHeader>
             {certificate
-              ? `Edit certificate ${certificate.name}`
+              ? `${certificate.name}`
               : "Create certificate"}
           </ModalHeader>
           <ModalCloseButton />

@@ -19,7 +19,7 @@ import {
   Tr,
   useDisclosure,
 } from "@chakra-ui/react"
-import { Edit, Plus, Trash } from "react-feather"
+import { Edit, Frown, Plus, Search, Trash } from "react-feather";
 import { Entities, Server } from "@app/types"
 import { SubmitHandler, useForm } from "react-hook-form"
 import dayjs from "dayjs"
@@ -61,37 +61,6 @@ export default function Certificates() {
     },
   })
 
-  // Setting up request meta changes tracking to update browser url
-  useEffect(() => {
-    const urlParams = new URLSearchParams()
-
-    // Adding search values
-    if (searchValue.length > 0) {
-      urlParams.set("search", searchValue)
-    }
-
-    // Adding current page
-    if (currentPage !== 0) {
-      urlParams.set("page", currentPage.toString())
-    }
-
-    // Adding elements per page
-    if (elementsPerPage !== 1) {
-      urlParams.set("elementsPerPage", elementsPerPage.toString())
-    }
-
-    // Adding sorting
-    if (sorting) {
-      urlParams.set("sortingColumn", sorting.column)
-      urlParams.set("sortingDirection", sorting.direction)
-    }
-
-    if (urlParams.size > 0) {
-      const newUrl = `${window.location.pathname}?${urlParams.toString()}`
-      window.history.replaceState(null, "", newUrl)
-    }
-  }, [searchValue, currentPage, elementsPerPage, sorting])
-
   // Retrieving filtering meta from URL
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search)
@@ -124,7 +93,38 @@ export default function Certificates() {
         direction: sortingDirection as "ASC" | "DESC",
       })
     }
-  }, [setSearchFormValue])
+  }, [])
+
+  // Setting up request meta changes tracking to update browser url
+  useEffect(() => {
+    const urlParams = new URLSearchParams()
+
+    // Adding search values
+    if (searchValue.trim().length > 0) {
+      urlParams.set("search", searchValue)
+    }else{
+      urlParams.delete("search")
+    }
+
+    // Adding current page
+    if (currentPage !== 0) {
+      urlParams.set("page", currentPage.toString())
+    }
+
+    // Adding elements per page
+    if (elementsPerPage !== 1) {
+      urlParams.set("elementsPerPage", elementsPerPage.toString())
+    }
+
+    // Adding sorting
+    if (sorting) {
+      urlParams.set("sortingColumn", sorting.column)
+      urlParams.set("sortingDirection", sorting.direction)
+    }
+
+    const newUrl = `${window.location.pathname}?${urlParams.toString()}`
+    window.history.replaceState(null, "", newUrl)
+  }, [searchValue, currentPage, elementsPerPage, sorting])
 
   // Extracting certificates from RTK Query response and parsing dates
   const certificatesList = useMemo<
@@ -278,6 +278,14 @@ export default function Certificates() {
               </Tbody>
             </Table>
           </TableContainer>
+          {
+            !certificatesList?.length && (
+              <Center marginTop={8} height={200} flexDirection={"column"} gap={2} color={"brand.500"}>
+                <Frown />
+                <div>No certificates found</div>
+              </Center>
+            )
+          }
           <HStack marginTop={4} justifyContent={"flex-end"}>
             <Pagination
               currentPage={currentPage}
